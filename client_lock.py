@@ -2,7 +2,6 @@ from KeyRecoveryScheme import KeyRecoveryScheme
 from questions import questions
 from Crypto.Util.Padding import pad
 from Crypto.Cipher import AES
-from Crypto.Protocol.KDF import bcrypt
 
 print("Welcome to the password recovery wizard!")
 password = input("Enter the password you want to recover later on: ") # the password is the flag
@@ -19,8 +18,6 @@ krs = KeyRecoveryScheme(10, 12)
 (aes_key, lock) = krs.Lock(answers)
 aes_cipher = AES.new(aes_key, AES.MODE_ECB)
 encrypted_password = aes_cipher.encrypt(pad(password.encode(), 16))
-password_hash = bcrypt(password, 15)
 
 print(f"Encrypted password: {str(encrypted_password)}")
-print(f"Password hash: {password_hash}")
 print(f"Lock: {lock}")

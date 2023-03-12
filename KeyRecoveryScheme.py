@@ -1,6 +1,7 @@
 import hashlib
 from fractions import Fraction
 from Crypto.Random.random import randrange
+from Crypto.Protocol.KDF import scrypt
 from math import gcd
 
 KEY_LENGTH = 16
@@ -39,9 +40,9 @@ def std_lagrange_coeff(i, x_lst, n): # get the ith standard Lagrange coefficient
     return result
 
 def h(j):
-    hasher = hashlib.sha256()
-    hasher.update(str(j).encode())
-    return hasher.digest()[:KEY_LENGTH]
+    # referred to following URL to select parameters:
+    # https://stackoverflow.com/questions/11126315/what-are-optimal-scrypt-work-factors
+    return scrypt(str(j), "", KEY_LENGTH, 1048576, 8, 1)
 
 class KeyRecoveryScheme():
     def __init__(self, k, n):
