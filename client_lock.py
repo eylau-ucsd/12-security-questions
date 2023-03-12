@@ -2,6 +2,7 @@ from KeyRecoveryScheme import KeyRecoveryScheme
 from questions import questions
 from Crypto.Util.Padding import pad
 from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
 
 print("Welcome to the password recovery wizard!")
 password = input("Enter the password you want to recover later on: ") # the password is the flag
@@ -19,5 +20,10 @@ krs = KeyRecoveryScheme(10, 12)
 aes_cipher = AES.new(aes_key, AES.MODE_ECB)
 encrypted_password = aes_cipher.encrypt(pad(password.encode(), 16))
 
-print(f"Encrypted password: {str(encrypted_password)}")
-print(f"Lock: {lock}")
+print("\nGenerated the following configuration for the password safe:")
+print("--------------------------------------------------------------")
+print(f"flag_aes = {str(encrypted_password)}")
+print(f"lock = {str(lock)}")
+print(f"flag_sha256 = {str(SHA256.new(data=password.encode()).digest())}")
+print("--------------------------------------------------------------")
+print("\nCopy and paste the 3 lines in between the horizontal bars and paste them into data.py.")
