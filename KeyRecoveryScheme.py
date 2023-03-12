@@ -52,7 +52,7 @@ class KeyRecoveryScheme():
     # answers are a list of tuples in the form (question #, answer string (NOT bytestring)). Note that the question # is 1-indexed.
     def Lock(self, answers): # generate random 128-bit key to be used for AES, and also its locked counterpart.
         assert(len(answers) == self.n)
-        poly_coeff = [randrange(p) for _ in range(self.k)] # generate random k degree polynomial with coefficients in Z_p
+        poly_coeff = [randrange(p) for _ in range(self.k)] # generate random (k - 1) degree polynomial with coefficients in Z_p
         s_i = [] # this is our lock, which contains all encrypted y-values for x = 1, 2, ..., n
         for (j, a) in answers: # answers in form (1, "answer1"), (2, "answer2"), ...
             y_val = eval_polynomial(j, poly_coeff, p) # evaluate polynomial on x = 1, 2, ..., n
