@@ -4,6 +4,9 @@ from Crypto.Random.random import randrange
 from Crypto.Protocol.KDF import scrypt
 from math import gcd
 
+# this scheme is taken from a paper by Ellison, Hall, Milbert and Schneier
+# titled "Protecting secret keys with personal entropy"
+
 KEY_LENGTH = 16
 p = 258641170704651026037450395747679449699 # picked as a safe prime, i.e. (p - 1) / 2 is also prime
 
