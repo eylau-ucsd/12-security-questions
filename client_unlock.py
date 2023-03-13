@@ -1,11 +1,32 @@
 from KeyRecoveryScheme import KeyRecoveryScheme
 from questions import questions
 from Crypto.Util.Padding import unpad
-from Crypto.Hash import SHA256
+from Crypto.Protocol.KDF import bcrypt_check
 from Crypto.Cipher import AES
-from data import flag_aes, lock, flag_sha256 # the data.py file is dynamically generated
+import json
+from sys import exit
+import base64
+
+def get_db_entry(username):
+    with open("data.json") as json_file:
+        password_database = json.load(json_file)
+    for entry in password_database:
+        if (entry["username"] == username):
+            return entry
+    return None # if no match is found
 
 print("Welcome to the password recovery wizard!")
+username = input("Enter the username whose password you want to recover: ")
+entry = get_db_entry(username)
+
+if (entry == None):
+    print("Could not find username in database.")
+    exit()
+
+encrypted_password = base64.b64decode(entry["encrypted_password"])
+lock = entry["lock"].encode()
+password_bcrypt = entry["password_bcrypt"].encode()
+
 print("To recover your password, you will have to answer a series of questions.")
 print("You only have to answer 10 of the 12 questions.")
 print("To skip a question, simply hit Return without entering any input.")
@@ -23,13 +44,10 @@ try:
     krs = KeyRecoveryScheme(10, 12)
     aes_key = krs.Unlock(answers, lock)
     aes_cipher = AES.new(aes_key, AES.MODE_ECB)
-    flag = unpad(aes_cipher.decrypt(flag_aes), 16)
-    if (flag_sha256 == SHA256.new(data=flag).digest()):
-        print("Password recovery successful! Here is your password:")
-        print(flag.decode())
-    else:
-        print("The hash of the recovered password doesn't match the expected hash of the password.")
-        print("Password recovery failed.")
+    password = unpad(aes_cipher.decrypt(encrypted_password), 16)
+    bcrypt_check(password, password_bcrypt)
+    print("Password recovery successful! Here is your password:")
+    print(password.decode())
 except ValueError:
     print("There was an error in unpadding.")
     print("Password recovery failed.")
